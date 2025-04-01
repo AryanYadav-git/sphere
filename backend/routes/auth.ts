@@ -4,11 +4,7 @@ import { addUserToProject, isValidUser, validateInvite } from "../utils";
 import { db } from "../db";
 import { users } from "../db/schema";
 import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
-
-export const AcceptInviteRegisterSchema = z.object({
-  code: z.string().uuid().optional(),
-});
+import { AcceptInviteRegisterSchema } from "../utils/zod-schema";
 
 export const authRoute = new Hono()
 

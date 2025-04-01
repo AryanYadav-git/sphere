@@ -2,61 +2,15 @@ import { Hono } from "hono";
 import { getUser, kindeClient, sessionManager } from "../kinde";
 import { db } from "../db";
 import { projects, projectMembers, inviteCodes, sprints } from "../db/schema";
-import { z } from "zod";
 import { zValidator } from "@hono/zod-validator";
 import { and, eq, ne } from "drizzle-orm";
 import { addUserToProject, isValidUser, validateInvite } from "../utils";
+import { AcceptInviteSchema, AddMemberSchema, CreateNewSprintSchema, ProjectCreateSchema } from "../utils/zod-schema";
 
-const ProjectCreateSchema = z
-  .object({
-    name: z.string().min(1).max(255),
-    description: z.string().optional(),
-    startDate: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/)
-      .optional(),
-    endDate: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/)
-      .optional(),
-  })
-  .refine(
-    (data) => {
-      if (data.startDate && data.endDate) {
-        return new Date(data.startDate) <= new Date(data.endDate);
-      }
-      return true;
-    },
-    {
-      message: "End date must be after start date",
-      path: ["endDate"],
-    }
-  );
 
-const AddMemberSchema = z.object({
-  projectId: z.number().int().positive(),
-  email: z.string().email(),
-  role: z.enum(["member", "productOwner", "scrumMaster"]),
-});
-
-export const AcceptInviteSchema = z.object({
-  code: z.string().uuid(),
-});
-
-const CreateNewSprintSchema = z.object({
-  projectId: z.number().int().positive(),
-  name: z.string().min(1).max(255),
-  goal: z.string().min(1).optional(),
-  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-  endDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
-});
 
 export const Route = new Hono()
-  .post(
-    "/create-project",
-    getUser,
-    zValidator("json", ProjectCreateSchema),
-    async (c) => {
+  .post("/create-project", getUser, zValidator("json", ProjectCreateSchema), async (c) => {
       const user = c.var.user;
       const body = await c.req.valid("json");
 
@@ -105,11 +59,7 @@ export const Route = new Hono()
     }
   )
 
-  .post(
-    "/add-new-member",
-    getUser,
-    zValidator("json", AddMemberSchema),
-    async (c) => {
+  .post("/add-new-member", getUser, zValidator("json", AddMemberSchema), async (c) => {
       const user = c.var.user;
       const body = await c.req.valid("json");
 
@@ -158,6 +108,7 @@ export const Route = new Hono()
       }
     }
   )
+
   .get("/ff", zValidator("query", AcceptInviteSchema), async (c) => {
     console.log("in accept-invite");
     const { code } = c.req.valid("query");
@@ -236,4 +187,8 @@ export const Route = new Hono()
         return c.json({ error: "Failed to find project" }, 500);
       }
     }
-  );
+  )
+
+  .post('/create-new-user-story', getUser, async (c) => {
+    return c.json({});
+  })
