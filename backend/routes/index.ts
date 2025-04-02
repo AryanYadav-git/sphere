@@ -5,7 +5,7 @@ import { projects, projectMembers, inviteCodes, sprints, userStories, tasks } fr
 import { zValidator } from "@hono/zod-validator";
 import { and, eq, ne } from "drizzle-orm";
 import { addUserToProject, isValidUser, validateInvite } from "../utils";
-import { AcceptInviteSchema, AddMemberSchema, CreateNewSprintSchema, CreateNewTaskSchema, CreateNewUserStoriesSchema, ProjectCreateSchema } from "../utils/zod-schema";
+import { AcceptInviteSchema, AddMemberSchema, CreateNewSprintSchema, CreateNewTaskSchema, CreateNewUserStoriesSchema, ProjectCreateSchema, UpdateTaskStatus } from "../utils/zod-schema";
 
 
 
@@ -276,4 +276,35 @@ export const Route = new Hono()
       console.error(err);
       return c.json({ error: "Internal server error" }, 500);
     }
+  })
+
+  .put('/change-task-status', getUser, zValidator('query', UpdateTaskStatus), async (c) => {
+    const user = c.var.user;
+    const {taskId, status} = c.req.valid('query');
+
+    const parsedTaskId = parseInt(taskId, 10);
+    if(isNaN(parsedTaskId)){
+      return c.json({ error: "Invalid task id" }, 400);
+    }
+
+    const validUser = await isValidUser(user);
+    if (!validUser) {
+      return c.json({ error: "Invalid user" }, 404);
+    }
+
+    try{
+      const [task] = await db.select().from(tasks).where(and(eq(tasks.id, parsedTaskId), eq(tasks.assigneeId, validUser.id)));
+      if(!task){
+        return c.json({ error: "You are not authorized to update this task" }, 403);
+      }
+      if(task.status === status){
+        return c.json({ error: "Task status is already in requested status" }, 400);
+      }
+      await db.update(tasks).set({status, updatedAt: new Date()}).where(eq(tasks.id, parsedTaskId));
+      return c.json({ message: "Task status updated successfully" }, 200);
+    }catch(e){
+      console.error(e);
+      return c.json({ error: "Internal server error" }, 500);
+    }
+
   })

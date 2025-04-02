@@ -63,3 +63,8 @@ export const CreateNewTaskSchema = z.object({
   assigneeId: z.number().int().positive(),
   estimatedHours: z.number().int().positive().optional(),
 });
+
+export const UpdateTaskStatus = z.object({
+  taskId: z.string(),
+  status: z.enum(["todo", "inProgress", "done", "backlog"]),
+});
