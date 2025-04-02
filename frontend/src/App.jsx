@@ -31,7 +31,7 @@ const App = () => {
   }
   const handleAddNewMember = async () => {
     const member = {
-      projectId: 13,
+      projectId: 1,
       email: 'test.aryanyadav@gmail.com',
       role: 'member',
       // startDate: new Date('2015-10-12'),
@@ -59,7 +59,7 @@ const App = () => {
   }
   const handleAddNewSprint = async () => {
     const member = {
-      projectId: 14,
+      projectId: 1,
       name: 'User Authentication',
       goal: 'Implement User Authentication System',
       startDate: '2015-10-12',
@@ -68,6 +68,64 @@ const App = () => {
 
     try {
       const response = await fetch('/api/project/create-new-sprint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(member),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create project')
+      }
+
+      const data = await response.json()
+      console.log('sprint created:', data)
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+  const handleAddNewUserStory = async () => {
+    const member = {
+      sprintId: 1,
+      title: 'User Authentication',
+      description: 'Implement User Authentication System',
+      status: 'todo',
+      priority: 'low',
+    }
+
+    try {
+      const response = await fetch('/api/project/create-new-user-story', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(member),
+      })
+
+      if (!response.ok) {
+        throw new Error('Failed to create project')
+      }
+
+      const data = await response.json()
+      console.log('sprint created:', data)
+    } catch (error) {
+      console.error('Error:', error)
+    }
+  }
+
+  const handleAddNewTask = async () => {
+    const member = {
+      userStoryId: 1,
+      title: 'User Authentication',
+      description: 'Implement User Authentication System',
+      status: 'todo',
+      estimatedHours: 2,
+      assigneeId: 3,
+    }
+
+    try {
+      const response = await fetch('/api/project/create-new-task', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -108,6 +166,8 @@ const App = () => {
       <button onClick={handleSubmit} className='w-fit'>Create Project</button>
       <button onClick={handleAddNewMember} className='w-fit'>Add new memeber</button>
       <button onClick={handleAddNewSprint} className='w-fit'>Add new sprint</button>
+      <button onClick={handleAddNewUserStory} className='w-fit'>Add new user story</button>
+      <button onClick={handleAddNewTask} className='w-fit'>Add new task</button>
     </div>
   )
 }

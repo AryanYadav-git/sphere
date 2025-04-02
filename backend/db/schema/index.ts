@@ -3,9 +3,10 @@ import { relations } from 'drizzle-orm';
 
 // Enums
 export const sprintStatusEnum = pgEnum('sprint_status', ['planned', 'active', 'completed']);
-export const storyStatusEnum = pgEnum('story_status', ['todo', 'inProgress', 'done']);
-export const taskStatusEnum = pgEnum('task_status', ['todo', 'inProgress', 'done']);
+export const storyStatusEnum = pgEnum('story_status', ['todo', 'inProgress', 'done', 'backlog']);
+export const taskStatusEnum = pgEnum('task_status', ['todo', 'inProgress', 'done', 'backlog']);
 export const userRoleEnum = pgEnum('user_role', ['admin', 'member', 'productOwner', 'scrumMaster']);
+export const storyPriorityEnum = pgEnum('story_priority', ['low', 'medium', 'high']);
 
 // Tables
 export const users = pgTable('users', {
@@ -62,7 +63,7 @@ export const userStories = pgTable('user_stories', {
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description'),
   status: storyStatusEnum('status').default('todo'),
-  priority: integer('priority').default(0),
+  priority: storyPriorityEnum('priority').default('low'),
   storyPoints: integer('story_points'),
   acceptanceCriteria: text('acceptance_criteria'),
   createdAt: timestamp('created_at').defaultNow(),

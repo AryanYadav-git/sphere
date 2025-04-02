@@ -1,10 +1,12 @@
 # dependencies (bun install)
 node_modules
+bun.lock
 
 # output
 out
 dist
 *.tgz
+drizzle
 
 # code coverage
 coverage

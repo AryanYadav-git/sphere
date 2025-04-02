@@ -46,3 +46,20 @@ export const CreateNewSprintSchema = z.object({
 export const AcceptInviteRegisterSchema = z.object({
   code: z.string().uuid().optional(),
 });
+
+export const CreateNewUserStoriesSchema = z.object({
+  sprintId: z.number().int().positive(),
+  title: z.string().min(1).max(255),
+  description: z.string().min(1).optional(),
+  priority: z.enum(["low", "medium", "high"]),
+  status: z.enum(["backlog", "todo", "inProgress", "done"]),
+});
+
+export const CreateNewTaskSchema = z.object({
+  userStoryId: z.number().int().positive(),
+  title: z.string().min(1).max(255),
+  description: z.string().min(1).optional(),
+  status: z.enum(["todo", "inProgress", "done"]),
+  assigneeId: z.number().int().positive(),
+  estimatedHours: z.number().int().positive().optional(),
+});

@@ -70,8 +70,12 @@ export const authRoute = new Hono()
       const { code } = c.req.valid("query");
       console.log(code);
       const validUser = await isValidUser(user);
+      if (!user) {
+        console.log("no valid user")
+      }
 
       if (!validUser) {
+        console.log('craeting user')
         await db.insert(users).values({
           kindeId: user.id,
           username: user.given_name,
@@ -79,6 +83,7 @@ export const authRoute = new Hono()
           avatarUrl: user.picture,
           role: "admin",
         });
+        console.log('done')
       }
 
       if (code) {
