@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { Button } from './ui/button';
 
 const All = () => {
   const [user, setUser] = useState();
@@ -185,7 +186,7 @@ const All = () => {
     return (
       <div className='flex flex-col gap-6 items-center w-screen'>
         <p>{user}</p>
-        <button onClick={handleSubmit} className='w-fit'>Create Project</button>
+        <Button onClick={handleSubmit} className='w-fit '>Create Project</Button>
         <button onClick={handleAddNewMember} className='w-fit'>Add new memeber</button>
         <button onClick={handleAddNewSprint} className='w-fit'>Add new sprint</button>
         <button onClick={handleAddNewUserStory} className='w-fit'>Add new user story</button>
