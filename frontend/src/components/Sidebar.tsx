@@ -121,7 +121,7 @@ export function Sidebar() {
         <nav className="grid gap-1 px-2">
           {navItems.map((item, index) => (
             <Link
-              key={index}
+              key={index+1}
               to={item.href}
               className={`flex h-10 items-center rounded-md px-3 text-muted-foreground hover:bg-accent hover:text-accent-foreground ${
                 location.pathname === item.href
